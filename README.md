@@ -1,2 +1,3 @@
-# full-stack-angular-spring-project
-A complete project on the angular spring boot service
+# Angular + SpringBoot + MongoDB
+
+- A complete project on the angular spring boot service
