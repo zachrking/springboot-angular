@@ -7,4 +7,5 @@
    - `npm install -g @angular/cli`
    - `ng help`
    - `ng generate --help`
+   - `ng new user-management-frontend`
    
