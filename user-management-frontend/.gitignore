@@ -24,5 +24,7 @@ hs_err_pid*
 
 /.idea/
 /*.iml
-/user-management-backend/*.iml
-/target/
+/*.iml
+/.editorconfig
+/node_modules/
+/.angular/
