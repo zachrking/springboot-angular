@@ -19,7 +19,7 @@ import org.springframework.data.mongodb.core.mapping.Field;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class User {
 
-    @Id()
+    @Id
     private ObjectId id;
     @JsonProperty(value = "first_name", required = true)
     @Field(name = "first_name")
