@@ -1,5 +1,6 @@
 package com.mclebtec.demo.controller;
 
+import com.mclebtec.demo.dto.UserDto;
 import com.mclebtec.demo.exception.ResourceNotFoundException;
 import com.mclebtec.demo.model.User;
 import com.mclebtec.demo.repository.UserRepository;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Slf4j
 @CrossOrigin(origins = "*")
@@ -31,27 +33,64 @@ public class UserController {
     private UserRepository userRepository;
 
     @GetMapping("/users")
-    public List<User> getAllUsers() {
-        return userRepository.findAll();
+    public List<UserDto> getAllUsers() {
+        final List<User> userDetails = userRepository.findAll();
+        log.info("getAllUsers::user-details::{}", userDetails);
+        return userDetails.stream().map(user -> {
+            UserDto userDto = new UserDto();
+            userDto.setId(user.getId().toString());
+            userDto.setFirstName(user.getFirstName());
+            userDto.setLastName(user.getLastName());
+            userDto.setEmailId(user.getEmailId());
+            return userDto;
+        }).collect(Collectors.toList());
+    }
+
+    @GetMapping("/users/{id}")
+    public UserDto getUserById(@PathVariable String id) {
+        log.info("getUserById::input-details::{}", id);
+        User user = userRepository.findById(new ObjectId(id))
+            .orElseThrow(() -> new ResourceNotFoundException("User not exist with id :" + id));
+        UserDto userDetail = new UserDto();
+        userDetail.setId(user.getId().toString());
+        userDetail.setFirstName(user.getFirstName());
+        userDetail.setLastName(user.getLastName());
+        userDetail.setEmailId(user.getEmailId());
+        return userDetail;
     }
 
     @PostMapping("/users")
-    public User createUser(@RequestBody User user) {
-        log.info("createUser::input-details::{}", user);
-        return userRepository.save(user);
+    public UserDto createUser(@RequestBody UserDto userDto) {
+        log.info("createUser::input-details::{}", userDto);
+        User user = new User();
+        user.setFirstName(userDto.getFirstName());
+        user.setLastName(userDto.getLastName());
+        user.setEmailId(userDto.getEmailId());
+        User createdUser = userRepository.save(user);
+        UserDto createdDetails = new UserDto();
+        createdDetails.setId(createdUser.getId().toString());
+        createdDetails.setFirstName(createdUser.getFirstName());
+        createdDetails.setLastName(createdUser.getLastName());
+        createdDetails.setEmailId(createdUser.getEmailId());
+        return createdDetails;
     }
 
     @PutMapping("/users/{id}")
-    public ResponseEntity<User> updateUser(@PathVariable String id,
-                                           @RequestBody User userDetails) {
-        log.info("updateUser::input-details::{}", userDetails);
+    public ResponseEntity<UserDto> updateUser(@PathVariable String id,
+                                              @RequestBody UserDto userDto) {
+        log.info("updateUser::input-details::{}", userDto);
         User user = userRepository.findById(new ObjectId(id))
             .orElseThrow(() -> new ResourceNotFoundException("User not exist with id :" + id));
-        user.setFirstName(userDetails.getFirstName());
-        user.setLastName(userDetails.getLastName());
-        user.setEmailId(userDetails.getEmailId());
+        user.setFirstName(userDto.getFirstName());
+        user.setLastName(userDto.getLastName());
+        user.setEmailId(userDto.getEmailId());
         User updatedUser = userRepository.save(user);
-        return ResponseEntity.ok(updatedUser);
+        UserDto updateUser = new UserDto();
+        updateUser.setId(updatedUser.getId().toString());
+        updateUser.setFirstName(updatedUser.getFirstName());
+        updateUser.setLastName(updatedUser.getLastName());
+        updateUser.setEmailId(updatedUser.getEmailId());
+        return ResponseEntity.ok(updateUser);
     }
 
     @DeleteMapping("/users/{id}")
